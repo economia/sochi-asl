@@ -118,7 +118,10 @@ draw = (filterFn, className, color, group) ->
         ->
             entering
                 ..classed \active \yes
-                ..transition!
+            if group == highlightGraph
+                entering.style \opacity 1
+            else
+                entering.transition!
                     ..duration 600
                     ..style \opacity 1
             exiting.transition!
