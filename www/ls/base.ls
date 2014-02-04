@@ -19,7 +19,7 @@ limits =
 
 container = d3.select ig.containers['asl']
 margin =
-    top: 5
+    top: 122
     right: 5
     bottom: 18
     left: 48
@@ -46,25 +46,32 @@ y = d3.scale.linear!
     ..domain [limits.height.min, limits.height.max]
     ..range [height, 0]
 
+w = (x 2) - (x 1)
+h = (y 1) - (y 1.01)
+console.log h / w
+
 color = d3.scale.ordinal!
     ..domain [0, 10]
     ..range <[#e41a1c #377eb8 #4daf4a #984ea3 #ff7f00 #a65628 #f781bf]>
 gsColor = d3.scale.ordinal!
     ..domain [0, 10]
     ..range <[#575757 #6F6F6F #868686 #6E6E6E #979797 #696969 #ABABAB]>
-
+sports_athletes = sports.map -> []
 for athlete in athletes
     athlete.x = x athlete.weight
     athlete.y = y athlete.height
     athlete.fullColor = color athlete.sportId
     athlete.gsColor = gsColor athlete.sportId
+    sports_athletes[athlete.sportId].push athlete
 
 sexSelector = \male
 tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
 
 draw-sport = (sport, originatingElement, originatingAthlete) ->
-    originatingDElement = d3.select originatingElement
-    originatingAthlete = originatingDElement.datum!
+    if originatingElement
+        originatingDElement = d3.select originatingElement
+        originatingAthlete = originatingDElement.datum!
+        originatingDElement.attr \fill (.fullColor)
     draw do
         ->
             base = it.isMale == (sexSelector == \male) and it.sport == sport
@@ -75,10 +82,10 @@ draw-sport = (sport, originatingElement, originatingAthlete) ->
         \athlete.secondary
         \fullColor
         highlightGraph
-    originatingDElement.attr \fill (.fullColor)
 
 clear-sport = (originatingElement) ->
-    d3.select originatingElement .attr \fill (.gsColor)
+    if originatingElement
+        d3.select originatingElement .attr \fill (.gsColor)
     clear-secondary!
 
 clear-secondary = ->
@@ -129,6 +136,48 @@ draw-y-axis = ->
         ..attr \transform "translate(0, 0)"
         ..call yAxis
 
+draw-selector = ->
+    selector = container.append \ul
+        ..attr \class \selector
+    weight = null
+    height = null
+    x = d3.scale.linear!
+        ..domain [limits.weight.min, limits.weight.max]
+
+    y = d3.scale.linear!
+        ..domain [limits.height.min, limits.height.max]
+    selector.selectAll \li .data sports
+        .enter!append \li
+            ..append \span
+                ..html -> it
+            ..on \mouseover (d, i) -> draw-sport sports[i]
+            ..on \mouseout -> clear-sport!
+            ..each (d, i) ->
+                canvas = document.createElement \canvas
+                @appendChild canvas
+                if weight == null
+                    weight := canvas.offsetWidth
+                    height := canvas.offsetHeight
+                    x.range [0 weight]
+                    y.range [height, 0]
+                canvas.width = weight
+                canvas.height = height
+                ctx = canvas.getContext \2d
+                hex = color i
+
+                px = ctx.createImageData 1 1
+                    ..data[0] = parseInt (hex.substr 1, 2), 16
+                    ..data[1] = parseInt (hex.substr 3, 2), 16
+                    ..data[2] = parseInt (hex.substr 5, 2), 16
+                    ..data[3] = 255
+                athletes = sports_athletes[i]
+                for athlete in athletes
+                    continue unless athlete.isMale == (sexSelector == \male)
+                    ctx.putImageData do
+                        px
+                        x athlete.weight
+                        y athlete.height
+
 elements = draw do
     -> it.isMale == (sexSelector == \male)
     \.athlete.primary
@@ -141,5 +190,5 @@ elements
 
 draw-x-axis!
 draw-y-axis!
-
+draw-selector!
 new Tooltip!watchElements!
