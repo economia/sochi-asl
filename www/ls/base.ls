@@ -38,6 +38,9 @@ graph = drawing.append \g
 highlightGraph = drawing.append \g
     ..attr \class \highlightGraph
 
+selector = container.append \ul
+    ..attr \class \selector
+
 x = d3.scale.linear!
     ..domain [limits.weight.min, limits.weight.max]
     ..range [0 width]
@@ -154,8 +157,6 @@ draw-y-axis = ->
         ..call yAxis
 
 draw-selector = ->
-    selector = container.append \ul
-        ..attr \class \selector
     weight = null
     height = null
     x = d3.scale.linear!
@@ -164,36 +165,40 @@ draw-selector = ->
     y = d3.scale.linear!
         ..domain [limits.height.min, limits.height.max]
     selector.selectAll \li .data sports
-        .enter!append \li
+        ..enter!append \li
             ..append \span
                 ..html -> it
             ..on \mouseover (d, i) -> draw-sport sports[i]
             ..on \mouseout -> clear-sport!
-            ..each (d, i) ->
-                canvas = document.createElement \canvas
-                @appendChild canvas
-                if weight == null
-                    weight := canvas.offsetWidth
-                    height := canvas.offsetHeight
-                    x.range [0 weight]
-                    y.range [height, 0]
-                canvas.width = weight
-                canvas.height = height
-                ctx = canvas.getContext \2d
-                hex = color i
+    selector.selectAll \li
+        ..each (d, i) ->
+            if @querySelector \canvas
+                that.parentNode.removeChild that
+            canvas = document.createElement \canvas
+            @appendChild canvas
+            if weight == null
+                weight := canvas.offsetWidth
+                height := canvas.offsetHeight
+                x.range [0 weight]
+                y.range [height, 0]
+            canvas.width = weight
+            canvas.height = height
+            ctx = canvas.getContext \2d
+            hex = color i
 
-                px = ctx.createImageData 1 1
-                    ..data[0] = parseInt (hex.substr 1, 2), 16
-                    ..data[1] = parseInt (hex.substr 3, 2), 16
-                    ..data[2] = parseInt (hex.substr 5, 2), 16
-                    ..data[3] = 255
-                athletes = sports_athletes[i]
-                for athlete in athletes
-                    continue unless athlete.isMale == (sexSelector == \male)
-                    ctx.putImageData do
-                        px
-                        x athlete.weight
-                        y athlete.height
+            px = ctx.createImageData 1 1
+                ..data[0] = parseInt (hex.substr 1, 2), 16
+                ..data[1] = parseInt (hex.substr 3, 2), 16
+                ..data[2] = parseInt (hex.substr 5, 2), 16
+                ..data[3] = 255
+            athletes = sports_athletes[i]
+            for athlete in athletes
+                continue unless athlete.isMale == (sexSelector == \male)
+                ctx.putImageData do
+                    px
+                    x athlete.weight
+                    y athlete.height
+
 redraw-all = ->
     elements = draw do
         -> it.isMale == (sexSelector == \male)
@@ -204,14 +209,9 @@ redraw-all = ->
     elements
         ..on \mouseover -> draw-sport it.sport, @, it
         ..on \mouseout -> clear-sport @
+    draw-selector!
 
 draw-x-axis!
 draw-y-axis!
-draw-selector!
 redraw-all!
 new Tooltip!watchElements!
-<~ setTimeout _, 900
-# console.log 'foo'
-sexSelector := \female
-redraw-all!
-# draw-selector!
