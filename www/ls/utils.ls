@@ -13,6 +13,10 @@ d3.pCsv = ->
     arguments[0] = utils.proxyAddr arguments[0]
     d3.csv ...arguments
 
+d3.pJson = ->
+    arguments[0] = utils.proxyAddr arguments[0]
+    d3.json ...arguments
+
 utils.draw-bg = (baseElement, padding = {}) ->
     bgElement = document.createElement \div
         ..className    = "ig-background"

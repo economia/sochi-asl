@@ -16,7 +16,7 @@ for line, index in lines
         sports_assoc[sport] = (sports.push sport) - 1
     if not countries_assoc[country]
         countries_assoc[country] = (countries.push country) - 1
-
-    athletes.push [name, sports_assoc[sport], countries_assoc[country], weight, height]
+    isMale = if sex == \Male then 1 else 0
+    athletes.push [name, sports_assoc[sport], countries_assoc[country], weight, height, isMale]
 
 fs.writeFile "#__dirname/../data/sportovci.json", JSON.stringify {countries, sports, athletes}#, " ", 4
