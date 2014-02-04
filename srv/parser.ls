@@ -12,9 +12,9 @@ for line, index in lines
     weight = parseFloat weight
     height = parseFloat height
     continue unless weight and height
-    if not sports_assoc[sport]
+    if sports_assoc[sport] is void
         sports_assoc[sport] = (sports.push sport) - 1
-    if not countries_assoc[country]
+    if countries_assoc[country] is void
         countries_assoc[country] = (countries.push country) - 1
     isMale = if sex == \Male then 1 else 0
     athletes.push [name, sports_assoc[sport], countries_assoc[country], weight, height, isMale]

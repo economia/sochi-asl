@@ -1,10 +1,11 @@
 (err, {countries, sports, athletes}) <~ d3.pJson "/data/sportovci.json"
 
 class Athlete
-    (@name, @weight, @height, @sport, @isMale) ->
-athletes = for [name, sport_id, country, weight, height, isMale] in athletes
-    sport = sports[sport_id]
-    new Athlete name, weight, height, sport, isMale
+    (@id, @name, @weight, @height, @sportId, @isMale) ->
+        @sport = sports[@sportId]
+
+athletes = for [name, sport_id, country, weight, height, isMale], index in athletes
+    new Athlete index, name, weight, height, sport_id, !!isMale
 
 heights = athletes.map (.height)
 weights = athletes.map (.weight)
@@ -34,6 +35,8 @@ drawing = svg.append \g
     ..attr \transform "translate(#{margin.left}, #{margin.top})"
 graph = drawing.append \g
     ..attr \class \graph
+highlightGraph = drawing.append \g
+    ..attr \class \highlightGraph
 
 x = d3.scale.linear!
     ..domain [limits.weight.min, limits.weight.max]
@@ -44,16 +47,72 @@ y = d3.scale.linear!
     ..range [height, 0]
 
 color = d3.scale.ordinal!
-    ..range <[#e41a1c #377eb8 #4daf4a #984ea3 #ff7f00 #ffff33 #a65628 #f781bf #999999]>
+    ..domain [0, 10]
+    ..range <[#e41a1c #377eb8 #4daf4a #984ea3 #ff7f00 #a65628 #f781bf]>
+gsColor = d3.scale.ordinal!
+    ..domain [0, 10]
+    ..range <[#575757 #6F6F6F #868686 #6E6E6E #979797 #696969 #ABABAB]>
 
-athletes .= filter (.isMale == 1)
+for athlete in athletes
+    athlete.x = x athlete.weight
+    athlete.y = y athlete.height
+    athlete.fullColor = color athlete.sportId
+    athlete.gsColor = gsColor athlete.sportId
 
-graph.selectAll \circle.athlete .data athletes .enter!append \circle
-    ..attr \class \athletes
-    ..attr \cx -> x it.weight
-    ..attr \cy -> y it.height
-    ..attr \r 5
-    ..attr \fill -> color it.sport
-    ..attr \data-tooltip (.sport)
+sexSelector = \male
+tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport}"
+
+draw-sport = (sport, originatingElement, originatingAthlete) ->
+    originatingDElement = d3.select originatingElement
+    originatingAthlete = originatingDElement.datum!
+    draw do
+        ->
+            base = it.isMale == (sexSelector == \male) and it.sport == sport
+            if originatingAthlete
+                base and not (originatingAthlete.x == it.x and originatingAthlete.y == it.y)
+            else
+                base
+        \athlete.secondary
+        \fullColor
+        highlightGraph
+    originatingDElement.attr \fill (.fullColor)
+
+clear-sport = (originatingElement) ->
+    d3.select originatingElement .attr \fill (.gsColor)
+    clear-secondary!
+
+clear-secondary = ->
+    highlightGraph.selectAll \* .remove!
+
+draw = (filterFn, className, color, group) ->
+    toDraw =  athletes.filter filterFn
+    overlapMap = {}
+    notOverlaping = toDraw.filter ->
+        addr = "#{it.x}-#{it.y}"
+        if overlapMap[addr]
+            no
+        else
+            overlapMap[addr] = yes
+            yes
+    group.selectAll \circle.athlete.primary
+        .data notOverlaping, (.id)
+        .enter!append \circle
+            ..attr \class "athlete primary"
+            ..attr \cx (.x)
+            ..attr \cy (.y)
+            ..attr \r 5
+            ..attr \fill -> it[color]
+            ..attr \data-tooltip tooltip
+
+elements = draw do
+    -> it.isMale == (sexSelector == \male)
+    \.athlete.primary
+    \gsColor
+    graph
+
+elements
+    ..on \mouseover -> draw-sport it.sport, @, it
+    ..on \mouseout -> clear-sport @
+
 
 new Tooltip!watchElements!
