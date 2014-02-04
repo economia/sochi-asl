@@ -46,9 +46,9 @@ y = d3.scale.linear!
     ..domain [limits.height.min, limits.height.max]
     ..range [height, 0]
 
-w = (x 2) - (x 1)
-h = (y 1) - (y 1.01)
-console.log h / w
+# w = (x 2) - (x 1)
+# h = (y 1) - (y 1.01)
+# console.log h / w
 
 color = d3.scale.ordinal!
     ..domain [0, 10]
@@ -101,15 +101,32 @@ draw = (filterFn, className, color, group) ->
         else
             overlapMap[addr] = yes
             yes
-    group.selectAll \circle.athlete.primary
-        .data notOverlaping, (.id)
-        .enter!append \circle
-            ..attr \class "athlete primary"
-            ..attr \cx (.x)
-            ..attr \cy (.y)
-            ..attr \r 5
-            ..attr \fill -> it[color]
-            ..attr \data-tooltip tooltip
+    selection = group.selectAll \circle.athlete.primary.active .data notOverlaping, (.id)
+    entering = selection.enter!append \circle
+        ..attr \class "athlete primary"
+        ..attr \cx 0
+        ..attr \cy 0
+        ..style \opacity 0
+        ..attr \transform -> "translate(#{it.x}, #{it.y})"
+        ..attr \r 5
+        ..attr \fill -> it[color]
+        ..attr \data-tooltip tooltip
+    setTimeout do
+        ->
+            entering
+                ..classed \active \yes
+                ..transition!
+                    ..duration 600
+                    ..style \opacity 1
+            exiting.transition!
+                ..duration 600
+                ..style \opacity 0
+                ..remove!
+
+        1
+    exiting = selection.exit!
+        ..classed \active no
+    entering
 
 draw-x-axis = ->
     xAxis = d3.svg.axis!
@@ -177,18 +194,24 @@ draw-selector = ->
                         px
                         x athlete.weight
                         y athlete.height
+redraw-all = ->
+    elements = draw do
+        -> it.isMale == (sexSelector == \male)
+        \.athlete.primary
+        \gsColor
+        graph
 
-elements = draw do
-    -> it.isMale == (sexSelector == \male)
-    \.athlete.primary
-    \gsColor
-    graph
-
-elements
-    ..on \mouseover -> draw-sport it.sport, @, it
-    ..on \mouseout -> clear-sport @
+    elements
+        ..on \mouseover -> draw-sport it.sport, @, it
+        ..on \mouseout -> clear-sport @
 
 draw-x-axis!
 draw-y-axis!
 draw-selector!
+redraw-all!
 new Tooltip!watchElements!
+<~ setTimeout _, 900
+# console.log 'foo'
+sexSelector := \female
+redraw-all!
+# draw-selector!
