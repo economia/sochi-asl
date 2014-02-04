@@ -14,15 +14,15 @@ limits =
         min: Math.min ...heights
         max: Math.max ...heights
     weight:
-        min: Math.min ...weights
+        min: -2 + Math.min ...weights
         max: Math.max ...weights
 
 container = d3.select ig.containers['asl']
 margin =
     top: 5
     right: 5
-    bottom: 5
-    left: 5
+    bottom: 18
+    left: 48
 fullHeight = ig.containers['asl'].offsetHeight
 fullWidth = ig.containers['asl'].offsetWidth
 height = fullHeight - margin.bottom - margin.top
@@ -104,6 +104,31 @@ draw = (filterFn, className, color, group) ->
             ..attr \fill -> it[color]
             ..attr \data-tooltip tooltip
 
+draw-x-axis = ->
+    xAxis = d3.svg.axis!
+        ..scale x
+        ..tickFormat -> "#it kg"
+        ..tickSize 4
+        ..outerTickSize 0
+        ..orient \bottom
+    xAxisGroup = drawing.append \g
+        ..attr \class "axis x"
+        ..attr \transform "translate(0, #{height})"
+        ..call xAxis
+
+draw-y-axis = ->
+    yAxis = d3.svg.axis!
+        ..scale y
+        ..tickFormat ->
+            "#{Math.round it * 100} cm"
+        ..tickSize 4
+        ..outerTickSize 0
+        ..orient \left
+    yAxisGroup = drawing.append \g
+        ..attr \class "axis y"
+        ..attr \transform "translate(0, 0)"
+        ..call yAxis
+
 elements = draw do
     -> it.isMale == (sexSelector == \male)
     \.athlete.primary
@@ -114,5 +139,7 @@ elements
     ..on \mouseover -> draw-sport it.sport, @, it
     ..on \mouseout -> clear-sport @
 
+draw-x-axis!
+draw-y-axis!
 
 new Tooltip!watchElements!
