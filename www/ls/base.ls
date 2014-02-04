@@ -1,11 +1,11 @@
 (err, {countries, sports, athletes}) <~ d3.pJson "/data/sportovci.json"
 
 class Athlete
-    (@id, @name, @weight, @height, @sportId, @isMale) ->
+    (@id, @name, @weight, @height, @sportId, @isMale, @age) ->
         @sport = sports[@sportId]
 
-athletes = for [name, sport_id, country, weight, height, isMale], index in athletes
-    new Athlete index, name, weight, height, sport_id, !!isMale
+athletes = for [name, sport_id, country, weight, height, isMale, age], index in athletes
+    new Athlete index, name, weight, height, sport_id, !!isMale, age
 
 heights = athletes.map (.height)
 weights = athletes.map (.weight)
@@ -60,7 +60,7 @@ for athlete in athletes
     athlete.gsColor = gsColor athlete.sportId
 
 sexSelector = \male
-tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport}"
+tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
 
 draw-sport = (sport, originatingElement, originatingAthlete) ->
     originatingDElement = d3.select originatingElement
