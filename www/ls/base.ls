@@ -202,6 +202,59 @@ draw-selector = ->
                     x athlete.weight
                     y athlete.height
 
+draw-sex-selector = ->
+    weight = null
+    height = null
+    selector = container.append \ul
+        ..attr \class "selector sex-selector"
+    x = d3.scale.linear!
+        ..domain [limits.weight.min, limits.weight.max]
+
+    y = d3.scale.linear!
+        ..domain [limits.height.min, limits.height.max]
+
+    resetActivity = ->
+        console.log 'foo'
+        items.classed \active (d, i) -> !!i != (sexSelector == \male)
+
+    selector.selectAll \li .data <[Muži Ženy]>
+        ..enter!append \li
+            ..append \span
+                ..html -> it
+            ..on \click (d, i) ->
+                sexSelector := if i == 0 then \male else \female
+                redraw-all!
+                resetActivity!
+    items = selector.selectAll \li
+        ..each (d, i) ->
+            if @querySelector \canvas
+                that.parentNode.removeChild that
+            canvas = document.createElement \canvas
+            @appendChild canvas
+            if weight == null
+                weight := canvas.offsetWidth
+                height := canvas.offsetHeight
+                x.range [0 weight]
+                y.range [height, 0]
+            canvas.width = weight
+            canvas.height = height
+            ctx = canvas.getContext \2d
+            hex = color if i == 0 then 7 else 5
+
+            px = ctx.createImageData 1 1
+                ..data[0] = parseInt (hex.substr 1, 2), 16
+                ..data[1] = parseInt (hex.substr 3, 2), 16
+                ..data[2] = parseInt (hex.substr 5, 2), 16
+                ..data[3] = 255
+            athletes = sports_athletes[i]
+            for athlete in athletes
+                continue unless athlete.isMale == (!i)
+                ctx.putImageData do
+                    px
+                    x athlete.weight
+                    y athlete.height
+    resetActivity!
+
 redraw-all = ->
     elements = draw do
         -> it.isMale == (sexSelector == \male)
@@ -217,4 +270,5 @@ redraw-all = ->
 draw-x-axis!
 draw-y-axis!
 redraw-all!
+draw-sex-selector!
 new Tooltip!watchElements!
