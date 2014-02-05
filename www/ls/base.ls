@@ -311,21 +311,27 @@ draw-crosshair = (target) ->
     py = y target.height
     crosshairLines.datum target
         ..select \line.x
-            ..attr \x1 0
-            ..attr \x2 width
-            ..attr \y1 py
-            ..attr \y2 py
+            ..transition!
+                ..duration 600
+                ..attr \x1 0
+                ..attr \x2 width
+                ..attr \y1 py
+                ..attr \y2 py
         ..select \line.y
-            ..attr \x1 px
-            ..attr \x2 px
-            ..attr \y1 0
-            ..attr \y2 height
+            ..transition!
+                ..duration 600
+                ..attr \x1 px
+                ..attr \x2 px
+                ..attr \y1 0
+                ..attr \y2 height
     tooltip =
         | target is crosshaired.male => "Průměrný muž"
         | target is crosshaired.female => "Průměrná žena"
     crosshairCenterCircle
-        ..attr \transform "translate(#px, #py)"
         ..attr \data-tooltip escape "<b>#tooltip</b><br />#{target.weight} kg, #{Math.round target.height * 100} cm"
+        ..transition!
+            ..duration 600
+            ..attr \transform "translate(#px, #py)"
 
 draw-x-axis!
 draw-y-axis!
