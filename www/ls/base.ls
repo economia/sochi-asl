@@ -19,7 +19,7 @@ limits =
 
 container = d3.select ig.containers['asl']
 margin =
-    top: 122
+    top: 110
     right: 5
     bottom: 18
     left: 48
