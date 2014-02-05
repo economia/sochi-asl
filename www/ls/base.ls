@@ -1,5 +1,5 @@
 (err, {countries, sports, athletes}) <~ d3.pJson "/data/sportovci.json"
-sports .= map (name) -> {name, highlight: no}
+sports .= map (name) -> {name, highlight: null, isActive: no}
 class Athlete
     (@id, @name, @weight, @height, @sportId, @isMale, @age) ->
         @sport = sports[@sportId]
@@ -130,6 +130,7 @@ draw = (filterFn, className, color, group) ->
                 entering.transition!
                     ..duration 600
                     ..style \opacity 1
+            return if group == highlightGraph
             exiting.transition!
                 ..duration 600
                 ..style \opacity 0
@@ -177,8 +178,14 @@ draw-selector = ->
         ..enter!append \li
             ..append \span
                 ..html (.name)
-            ..on \mouseover (d, i) -> draw-sport sports[i]
-            ..on \mouseout (d, i) -> clear-sport sports[i]
+            ..on \mouseover (sport) ->
+                draw-sport sport unless sport.isActive
+            ..on \mouseout (sport) ->
+                clear-sport sport unless sport.isActive
+            ..on \click (sport) ->
+                sport.isActive = !sport.isActive
+                d3.select @ .classed \active sport.isActive
+
     selector.selectAll \li
         ..each (d, i) ->
             if @querySelector \canvas
