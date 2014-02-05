@@ -35,6 +35,7 @@
 
 
 .ig
+    HNDorange = desaturate(HNOrange, 87%)
     ul.selector
         position absolute
         top 0px
@@ -44,7 +45,6 @@
         padding 0px
         margin 0px
         li
-            HNDorange = desaturate(HNOrange, 87%)
             width 84px
             height 104px
             border-radius 4px
@@ -85,3 +85,79 @@
         top 250px
         li
             height 89px
+    form
+        position absolute
+        right 5px
+        bottom 28px
+        float right
+        background rgba(255,255,255,0.7)
+        p
+            font-size 0.7em
+            color #444
+            text-align right
+            text-transform uppercase
+            max-width 240px
+            &.closest
+                font-weight bold
+                margin 0px 0px 5px 0px
+                border-bottom 1px solid #444
+                float right
+        ul
+            float left
+            clear both
+            margin 0px 0px 18px 0px
+            padding 0px
+            list-style-type none
+            &:empty
+                display none
+            li
+                float right
+                clear both
+                padding 0px 0px 0px 12px
+                font-size 0.7em
+                color #444
+                text-align right
+        div
+            float right
+            clear both
+            label
+                display block
+                clear left
+                float left
+                width 50px
+                text-transform uppercase
+                font-size 0.7em
+                padding-top 4px
+                color #666
+                text-align right
+                margin-right 14px
+            input
+                border-radius 4px
+                float left
+                border 1px solid lighten(HNDorange,70%)
+                color #666
+                font-size 0.8em
+                padding 3px 7px
+                margin 0px
+                background lighten(HNDorange,92%)
+                width 45px
+                text-align right
+                &:hover
+                    background lighten(HNDorange,87%)
+                &:focus
+                    background lighten(HNDorange,85%)
+                    border-color lighten(HNDorange,53%)
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button
+                    display none
+                &[type=submit]
+                    clear left
+                    float right
+                    width auto
+                    background lighten(HNDorange,85%)
+                    border-color lighten(HNDorange,53%)
+
+
+            label
+            input
+                margin-bottom 7px

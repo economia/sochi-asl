@@ -88,9 +88,48 @@ crosshaired =
         weight: 75
         height: 1.68
 
+inputTimeout = null
+
+inputs = container.append \form
+    ..append \p
+        ..html "Zadejte vaši výsku a&nbsp;váhu a&nbsp;porovnejte se s&nbsp;olympijskými sportovci"
+    ..append \ul
+    ..append \div
+        ..append \label
+            ..attr \for \sochi-asl-height
+            ..html "Výška"
+        ..append \input
+            ..attr \id \sochi-asl-height
+            ..attr \type \number
+            ..attr \value crosshaired.male.height * 100
+        ..append \label
+            ..attr \for \sochi-asl-weight
+            ..html "Váha"
+        ..append \input
+            ..attr \id \sochi-asl-weight
+            ..attr \type \number
+            ..attr \value crosshaired.male.weight
+        ..append \input
+            ..attr \type \submit
+            ..attr \value \OK
+    ..on \submit ->
+        d3.event.preventDefault!
+        weight = @querySelector \#sochi-asl-weight .value
+        height = @querySelector \#sochi-asl-height .value
+        set-crosshair {weight, height}
+    ..on \keyup ->
+        clearTimeout inputTimeout if inputTimeout
+        inputTimeout := setTimeout do
+            ~>
+                inputTimeout := null
+                weight = @querySelector \#sochi-asl-weight .value
+                height = @querySelector \#sochi-asl-height .value
+                set-crosshair {weight, height}
+            500
+
 sexSelector = \male
 crosshairLines.datum crosshaired.male
-tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
+tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport.name}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
 
 draw-sport = (sport, originatingElement, originatingAthlete) ->
     if originatingElement
@@ -328,15 +367,39 @@ draw-crosshair = (target) ->
     tooltip =
         | target is crosshaired.male => "Průměrný muž"
         | target is crosshaired.female => "Průměrná žena"
+        | otherwise => "Vy!"
     crosshairCenterCircle
         ..attr \data-tooltip escape "<b>#tooltip</b><br />#{target.weight} kg, #{Math.round target.height * 100} cm"
         ..transition!
             ..duration 600
             ..attr \transform "translate(#px, #py)"
 
+normalize-input-value = -> it.replace "," "." |> parseFloat
+set-crosshair = ({height, weight}:dimensions) ->
+    weight = normalize-input-value weight
+    height = normalize-input-value height
+    if height > 3 then height /= 100
+    crosshaired.user{weight, height} = {height, weight}
+    draw-crosshair crosshaired.user
+    sorted = sort-athletes {height, weight}
+    inputs.select \p
+        ..html "Vám nejbližší sportovci"
+        ..attr \class \closest
+    inputs.select \ul .selectAll \li
+        .remove!
+        .data sorted.slice 0, 5 .enter!append \li
+            ..html -> "#{it.name} #{it.weight} kg, #{Math.round it.height * 100} cm, #{it.sport.name}"
+
+sort-athletes = ({height, weight}) ->
+    for athlete in athletes
+        dH = (height - athlete.height) * 100
+        dW = weight - athlete.weight
+        athlete.distance = Math.sqrt dH**2 + dW ** 2
+    athletes.sort (a, b) -> a.distance - b.distance
+
+
 draw-x-axis!
 draw-y-axis!
 redraw-all!
 draw-sex-selector!
-
 new Tooltip!watchElements!
