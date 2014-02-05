@@ -63,8 +63,13 @@
                 cursor pointer
                 background lighten(HNDorange,92%)
             &.active
-                background lighten(HNDorange,85%)
+                background lighten(HNDorange,80%)
                 border-color lighten(HNDorange,53%)
+                box-shadow 0px 0px 2px lighten(HNOrange, 60%)
+                span
+                    color #111
+                canvas
+                    background lighten(HNDorange,95%)
             span
                 position absolute
                 top 66px
@@ -85,6 +90,9 @@
         top 250px
         li
             height 89px
+            &.active span
+                font-weight bold
+                color darken(HNDorange, 60%)
     form
         position absolute
         right 5px
