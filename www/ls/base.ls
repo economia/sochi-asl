@@ -85,8 +85,8 @@ crosshaired =
         weight: 65
         height: 1.57
     user:
-        weight: 75
-        height: 1.68
+        weight: null
+        height: null
 
 inputTimeout = null
 
@@ -116,6 +116,13 @@ inputs = container.append \form
         d3.event.preventDefault!
         weight = @querySelector \#sochi-asl-weight .value
         height = @querySelector \#sochi-asl-height .value
+        if not weight
+            weight = crosshaired[sexSelector].weight.toString!
+            @querySelector \#sochi-asl-weight .value = weight
+        if not height
+            height = crosshaired[sexSelector].height * 100
+            height .= toString!
+            @querySelector \#sochi-asl-height .value = height
         set-crosshair {weight, height}
     ..on \keyup ->
         clearTimeout inputTimeout if inputTimeout
@@ -124,7 +131,7 @@ inputs = container.append \form
                 inputTimeout := null
                 weight = @querySelector \#sochi-asl-weight .value
                 height = @querySelector \#sochi-asl-height .value
-                set-crosshair {weight, height}
+                set-crosshair {weight, height} if weight and height
             500
 
 sexSelector = \male
@@ -385,6 +392,7 @@ set-crosshair = ({height, weight}:dimensions) ->
     weight = normalize-input-value weight
     height = normalize-input-value height
     if height > 3 then height /= 100
+    return if height is crosshaired.user.height and weight is crosshaired.user.weight
     crosshaired.user{weight, height} = {height, weight}
     draw-crosshair crosshaired.user
     sorted = sort-athletes {height, weight}
