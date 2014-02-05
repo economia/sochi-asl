@@ -207,6 +207,7 @@ draw-selector = ->
             ..on \click (sport) ->
                 sport.isActive = !sport.isActive
                 d3.select @ .classed \active sport.isActive
+                clear-sport sport if not sport.isActive
 
     selector.selectAll \li
         ..each (d, i) ->
