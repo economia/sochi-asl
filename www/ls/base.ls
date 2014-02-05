@@ -1,5 +1,5 @@
 (err, {countries, sports, athletes}) <~ d3.pJson "/data/sportovci.json"
-
+sports .= map (name) -> {name, highlight: no}
 class Athlete
     (@id, @name, @weight, @height, @sportId, @isMale, @age) ->
         @sport = sports[@sportId]
@@ -77,7 +77,7 @@ draw-sport = (sport, originatingElement, originatingAthlete) ->
             ..classed \highlight yes
         originatingAthlete = originatingDElement.datum!
     graph.classed \secondary-active yes
-    draw do
+    elements = draw do
         ->
             base = it.isMale == (sexSelector == \male) and it.sport == sport
             if originatingAthlete
@@ -87,16 +87,15 @@ draw-sport = (sport, originatingElement, originatingAthlete) ->
         \athlete.secondary
         \fullColor
         highlightGraph
+    sport.highlight = elements
 
-clear-sport = (originatingElement) ->
+clear-sport = (sport, originatingElement) ->
     if originatingElement
         d3.select originatingElement
             ..attr \fill (.gsColor)
             ..classed \highlight no
-    clear-secondary!
-
-clear-secondary = ->
-    highlightGraph.selectAll \* .remove!
+    sport.highlight.remove!
+    sport.highlight = null
     if highlightGraph.selectAll \* .0.length == 0
         graph.classed \secondary-active no
 
@@ -177,9 +176,9 @@ draw-selector = ->
     selector.selectAll \li .data sports
         ..enter!append \li
             ..append \span
-                ..html -> it
+                ..html (.name)
             ..on \mouseover (d, i) -> draw-sport sports[i]
-            ..on \mouseout -> clear-sport!
+            ..on \mouseout (d, i) -> clear-sport sports[i]
     selector.selectAll \li
         ..each (d, i) ->
             if @querySelector \canvas
@@ -271,7 +270,7 @@ redraw-all = ->
 
     elements
         ..on \mouseover -> draw-sport it.sport, @, it
-        ..on \mouseout -> clear-sport @
+        ..on \mouseout -> clear-sport it.sport, @
     draw-selector!
 
 draw-x-axis!
