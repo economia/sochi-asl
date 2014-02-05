@@ -28,26 +28,27 @@
         padding 0px
         margin 0px
         li
+            HNDorange = desaturate(HNOrange, 87%)
             width 84px
             height 109px
             border-radius 4px
-            border 1px solid #bbb
+            border 1px solid lighten(HNDorange,70%)
             margin-left 10px
             margin-bottom 10px
             float left
             overflow hidden
             position relative
-            background #f8f8f8
+            background lighten(HNDorange,95%)
 
             &:first-child
             &:nth-child(10)
                 margin-left 0px
             &:hover
                 cursor default
-                background #f3f3f3
+                background lighten(HNDorange,90%)
             &.active
-                background #eee
-                border-color #888
+                background lighten(HNDorange,87%)
+                border-color lighten(HNDorange,53%)
             span
                 position absolute
                 top 62px
