@@ -197,6 +197,19 @@ draw = (filterFn, className, color, group) ->
         ..attr \transform -> "translate(#{it.x}, #{it.y})"
         ..attr \r 5
         ..attr \fill -> it[color]
+        ..on \mouseover ->
+            display-auxiliary it.overlaps || [it]
+            draw-sport it.sport, @, it if group == graph
+        ..on \mouseout ->
+            hide-auxiliary!
+            clear-sport it.sport, @ if group == graph
+        ..attr \data-tooltip ->
+            out = "<b>#{it.name}</b><br />"
+            overlaps = it.overlaps && it.overlaps.length - 1
+            if overlaps
+                out += "<i>a #{that} další#{if that > 4 then 'ch' else ''}</i><br />"
+            out += "#{it.sport.name}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
+            escape out
     setTimeout do
         ->
             entering
@@ -356,20 +369,6 @@ redraw-all = ->
         \gsColor
         graph
 
-    elements
-        ..on \mouseover ->
-            display-auxiliary it.overlaps
-            draw-sport it.sport, @, it
-        ..on \mouseout ->
-            hide-auxiliary!
-            clear-sport it.sport, @
-        ..attr \data-tooltip ->
-            out = "<b>#{it.name}</b><br />"
-            overlaps = it.overlaps.length - 1
-            if overlaps
-                out += "<i>a #{that} další#{if that > 4 then 'ch' else ''}</i><br />"
-            out += "#{it.sport.name}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
-            escape out
     draw-selector!
     activeSports = sports.filter (.isActive)
         ..forEach -> clear-sport it
