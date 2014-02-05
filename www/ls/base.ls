@@ -77,7 +77,19 @@ for athlete in athletes
     athlete.gsColor = gsColor athlete.sportId
     sports_athletes[athlete.sportId].push athlete
 
+crosshaired =
+    male:
+        weight: 75
+        height: 1.68
+    female:
+        weight: 65
+        height: 1.57
+    user:
+        weight: 75
+        height: 1.68
+
 sexSelector = \male
+crosshairLines.datum crosshaired.male
 tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
 
 draw-sport = (sport, originatingElement, originatingAthlete) ->
@@ -291,17 +303,8 @@ redraw-all = ->
     activeSports = sports.filter (.isActive)
         ..forEach -> clear-sport it
         ..forEach -> draw-sport it
-
-crosshaired =
-    male:
-        weight: 75
-        height: 1.68
-    female:
-        weight: 65
-        height: 1.57
-    user:
-        weight: 75
-        height: 1.68
+    if crosshairLines.datum! in [crosshaired.male, crosshaired.female]
+        draw-crosshair crosshaired[sexSelector]
 
 draw-crosshair = (target) ->
     px = x target.weight
@@ -328,5 +331,5 @@ draw-x-axis!
 draw-y-axis!
 redraw-all!
 draw-sex-selector!
-draw-crosshair crosshaired.male
+
 new Tooltip!watchElements!
