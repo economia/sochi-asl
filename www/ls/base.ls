@@ -52,12 +52,12 @@ selector = container.append \ul
     ..attr \class \selector
 
 x = d3.scale.linear!
-    ..domain [limits.weight.min, limits.weight.max]
+    ..domain [limits.weight.min - 6, limits.weight.max + 6]
     ..range [0 width]
 
 y = d3.scale.linear!
     ..domain [limits.height.min, limits.height.max]
-    ..range [height, 0]
+    ..range [height - 7, 0 + 5]
 
 # w = (x 2) - (x 1)
 # h = (y 1) - (y 1.01)
