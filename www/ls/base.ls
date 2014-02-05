@@ -278,6 +278,9 @@ redraw-all = ->
         ..on \mouseover -> draw-sport it.sport, @, it
         ..on \mouseout -> clear-sport it.sport, @
     draw-selector!
+    activeSports = sports.filter (.isActive)
+        ..forEach -> clear-sport it
+        ..forEach -> draw-sport it
 
 draw-x-axis!
 draw-y-axis!
