@@ -257,8 +257,18 @@ draw-y-axis = ->
         ..call yAxis
 
 draw-selector = ->
-    weight = null
     height = null
+    weight = null
+    sexedAthletes = athletes.filter -> it.isMale == (sexSelector == \male)
+    weights = sexedAthletes.map (.weight)
+    heights = sexedAthletes.map (.height)
+    limits =
+        height:
+            min: Math.min ...heights
+            max: Math.max ...heights
+        weight:
+            min: Math.min ...weights
+            max: Math.max ...weights
     x = d3.scale.linear!
         ..domain [limits.weight.min, limits.weight.max]
 
