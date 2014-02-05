@@ -33,6 +33,16 @@ svg = container.append \svg
 drawing = svg.append \g
     ..attr \class \drawing
     ..attr \transform "translate(#{margin.left}, #{margin.top})"
+crosshairLines = drawing.append \g
+    ..attr \class \crosshair
+    ..append \line
+        ..attr \class \x
+    ..append \line
+        ..attr \class \y
+crosshairCenter = drawing.append \g
+    ..attr \class \crosshair
+crosshairCenterCircle = crosshairCenter.append \circle
+    ..attr \r 5
 graph = drawing.append \g
     ..attr \class \graph
 highlightGraph = drawing.append \g
@@ -282,8 +292,41 @@ redraw-all = ->
         ..forEach -> clear-sport it
         ..forEach -> draw-sport it
 
+crosshaired =
+    male:
+        weight: 75
+        height: 1.68
+    female:
+        weight: 65
+        height: 1.57
+    user:
+        weight: 75
+        height: 1.68
+
+draw-crosshair = (target) ->
+    px = x target.weight
+    py = y target.height
+    crosshairLines.datum target
+        ..select \line.x
+            ..attr \x1 0
+            ..attr \x2 width
+            ..attr \y1 py
+            ..attr \y2 py
+        ..select \line.y
+            ..attr \x1 px
+            ..attr \x2 px
+            ..attr \y1 0
+            ..attr \y2 height
+    tooltip =
+        | target is crosshaired.male => "Průměrný muž"
+        | target is crosshaired.female => "Průměrná žena"
+    crosshairCenterCircle
+        ..attr \transform "translate(#px, #py)"
+        ..attr \data-tooltip escape "<b>#tooltip</b><br />#{target.weight} kg, #{Math.round target.height * 100} cm"
+
 draw-x-axis!
 draw-y-axis!
 redraw-all!
 draw-sex-selector!
+draw-crosshair crosshaired.male
 new Tooltip!watchElements!
