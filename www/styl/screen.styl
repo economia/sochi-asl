@@ -19,6 +19,12 @@
             path.domain
                 stroke #bbb
                 shape-rendering crispEdges
+        .graph.secondary-active
+            .athlete
+                fill-opacity 0.5
+                &.highlight
+                    fill-opacity 1
+
 .ig
     ul.selector
         position absolute
@@ -44,7 +50,7 @@
             &:nth-child(10)
                 margin-left 0px
             &:hover
-                cursor default
+                cursor pointer
                 background lighten(HNDorange,90%)
             &.active
                 background lighten(HNDorange,87%)
@@ -64,6 +70,3 @@
                 border-bottom 1px dotted #ccc
     ul.sex-selector
         top 250px
-        li
-            &:hover
-                cursor pointer

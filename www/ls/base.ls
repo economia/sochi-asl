@@ -58,7 +58,7 @@ color = d3.scale.ordinal!
     ..range <[#e41a1c #377eb8 #4daf4a #984ea3 #ff7f00 #a65628 #f781bf]>
 gsColor = d3.scale.ordinal!
     ..domain [0, 10]
-    ..range <[#888 #999 #aaa #808080 #a0a0a0 #999]>
+    ..range <[#575757 #6F6F6F #868686 #6E6E6E #979797 #696969 #ABABAB]>
 sports_athletes = sports.map -> []
 for athlete in athletes
     athlete.x = x athlete.weight
@@ -73,8 +73,10 @@ tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport}<br />#{it.weight} kg, #{
 draw-sport = (sport, originatingElement, originatingAthlete) ->
     if originatingElement
         originatingDElement = d3.select originatingElement
+            ..attr \fill (.fullColor)
+            ..classed \highlight yes
         originatingAthlete = originatingDElement.datum!
-        originatingDElement.attr \fill (.fullColor)
+    graph.classed \secondary-active yes
     draw do
         ->
             base = it.isMale == (sexSelector == \male) and it.sport == sport
@@ -88,11 +90,16 @@ draw-sport = (sport, originatingElement, originatingAthlete) ->
 
 clear-sport = (originatingElement) ->
     if originatingElement
-        d3.select originatingElement .attr \fill (.gsColor)
+        d3.select originatingElement
+            ..attr \fill (.gsColor)
+            ..classed \highlight no
     clear-secondary!
 
 clear-secondary = ->
     highlightGraph.selectAll \* .remove!
+    if highlightGraph.selectAll \* .0.length == 0
+        graph.classed \secondary-active no
+
 
 draw = (filterFn, className, color, group) ->
     toDraw =  athletes.filter filterFn
