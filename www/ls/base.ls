@@ -66,9 +66,8 @@ y = d3.scale.linear!
 color = d3.scale.ordinal!
     ..domain [0, 10]
     ..range <[#e41a1c #377eb8 #4daf4a #984ea3 #ff7f00 #a65628 #f781bf]>
-gsColor = d3.scale.ordinal!
-    ..domain [0, 10]
-    ..range <[#575757 #6F6F6F #868686 #6E6E6E #979797 #696969 #ABABAB]>
+gsColor = d3.scale.quantize!
+    ..range <[#999 #888 #777 #666 #555 #444]>
 sports_athletes = sports.map -> []
 for athlete in athletes
     athlete.x = x athlete.weight
@@ -136,7 +135,6 @@ inputs = container.append \form
 
 sexSelector = \male
 crosshairLines.datum crosshaired.male
-tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport.name}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
 
 draw-sport = (sport, originatingElement, originatingAthlete) ->
     return if sport.highlight
@@ -176,10 +174,19 @@ draw = (filterFn, className, color, group) ->
     notOverlaping = toDraw.filter ->
         addr = "#{it.x}-#{it.y}"
         if overlapMap[addr]
+            len = overlapMap[addr].overlaps.push it
             no
         else
-            overlapMap[addr] = yes
+            overlapMap[addr] = it
+            it.overlaps = []
             yes
+    if group == graph
+        maxOverlaps = - 1 + Math.max ...notOverlaping.map (.overlaps.length)
+        len = gsColor.range!length
+        gsColor.domain [0, maxOverlaps]
+        for athlete in notOverlaping
+            athlete.gsColor = gsColor athlete.overlaps.length
+
     selection = group.selectAll \circle.athlete.primary.active .data notOverlaping, (.id)
     entering = selection.enter!append \circle
         ..attr \class "athlete primary"
@@ -189,7 +196,12 @@ draw = (filterFn, className, color, group) ->
         ..attr \transform -> "translate(#{it.x}, #{it.y})"
         ..attr \r 5
         ..attr \fill -> it[color]
-        ..attr \data-tooltip tooltip
+        ..attr \data-tooltip ->
+            out = "<b>#{it.name}</b><br />"
+            if it.overlaps.length
+                out += "<i>a #{that} další#{if that > 4 then 'ch' else ''}</i><br />"
+            out += "#{it.sport.name}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
+            escape out
     setTimeout do
         ->
             entering
