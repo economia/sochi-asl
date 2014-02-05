@@ -220,7 +220,6 @@ draw-sex-selector = ->
         ..domain [limits.height.min, limits.height.max]
 
     resetActivity = ->
-        console.log 'foo'
         items.classed \active (d, i) -> !!i != (sexSelector == \male)
 
     selector.selectAll \li .data <[Muži Ženy]>
