@@ -88,7 +88,8 @@ crosshaired =
         height: null
 
 inputTimeout = null
-
+auxiliaryList = container.append \div
+        ..attr \class \aux
 inputs = container.append \form
     ..append \p
         ..html "Zadejte vaši výsku a&nbsp;váhu a&nbsp;porovnejte se s&nbsp;olympijskými sportovci"
@@ -174,16 +175,16 @@ draw = (filterFn, className, color, group) ->
     notOverlaping = toDraw.filter ->
         addr = "#{it.x}-#{it.y}"
         if overlapMap[addr]
-            len = overlapMap[addr].overlaps.push it
+            if group == graph then overlapMap[addr].overlaps.push it
             no
         else
             overlapMap[addr] = it
-            it.overlaps = []
+            if group == graph then it.overlaps = [it]
             yes
     if group == graph
         maxOverlaps = - 1 + Math.max ...notOverlaping.map (.overlaps.length)
         len = gsColor.range!length
-        gsColor.domain [0, maxOverlaps]
+        gsColor.domain [1, maxOverlaps]
         for athlete in notOverlaping
             athlete.gsColor = gsColor athlete.overlaps.length
 
@@ -196,12 +197,6 @@ draw = (filterFn, className, color, group) ->
         ..attr \transform -> "translate(#{it.x}, #{it.y})"
         ..attr \r 5
         ..attr \fill -> it[color]
-        ..attr \data-tooltip ->
-            out = "<b>#{it.name}</b><br />"
-            if it.overlaps.length
-                out += "<i>a #{that} další#{if that > 4 then 'ch' else ''}</i><br />"
-            out += "#{it.sport.name}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
-            escape out
     setTimeout do
         ->
             entering
@@ -362,8 +357,19 @@ redraw-all = ->
         graph
 
     elements
-        ..on \mouseover -> draw-sport it.sport, @, it
-        ..on \mouseout -> clear-sport it.sport, @
+        ..on \mouseover ->
+            display-auxiliary it.overlaps
+            draw-sport it.sport, @, it
+        ..on \mouseout ->
+            hide-auxiliary!
+            clear-sport it.sport, @
+        ..attr \data-tooltip ->
+            out = "<b>#{it.name}</b><br />"
+            overlaps = it.overlaps.length - 1
+            if overlaps
+                out += "<i>a #{that} další#{if that > 4 then 'ch' else ''}</i><br />"
+            out += "#{it.sport.name}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
+            escape out
     draw-selector!
     activeSports = sports.filter (.isActive)
         ..forEach -> clear-sport it
@@ -423,7 +429,15 @@ sort-athletes = ({height, weight}) ->
         athlete.distance = Math.sqrt dH**2 + dW ** 2
     athletes.sort (a, b) -> a.distance - b.distance
 
+display-auxiliary = (athletes) ->
+    {weight, height} = athletes.0
+    auxiliaryList
+        ..append \h3 .html "Sportovci vážící #{weight} kg, #{Math.round height * 100} cm"
+        ..append \ul .selectAll \li .data athletes
+            ..enter!append \li
+                ..html -> "#{it.name}, #{it.sport.name}, #{it.age} let"
 
+hide-auxiliary = -> auxiliaryList.selectAll \* .remove!
 draw-x-axis!
 draw-y-axis!
 redraw-all!
