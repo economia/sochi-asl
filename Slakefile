@@ -10,10 +10,7 @@ externalScripts =
     \http://service.ihned.cz/js/tooltip/v1.1.2.d3.min.js
     ...
 
-externalStyles =
-    \http://service.ihned.cz/js/tooltip/v1.1.3.css
-    ...
-
+externalStyles = []
 
 preferScripts = <[ init.js ]>
 deferScripts = <[ base.js ]>
