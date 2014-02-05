@@ -52,16 +52,16 @@ selector = container.append \ul
     ..attr \class \selector
 
 x = d3.scale.linear!
-    ..domain [limits.weight.min - 6, limits.weight.max + 6]
+    ..domain [limits.weight.min - 7, limits.weight.max + 6]
     ..range [0 width]
 
 y = d3.scale.linear!
-    ..domain [limits.height.min, limits.height.max]
-    ..range [height - 7, 0 + 5]
+    ..domain [limits.height.min - 0.008, limits.height.max + 0.005]
+    ..range [height, 0]
 
-# w = (x 2) - (x 1)
-# h = (y 1) - (y 1.01)
-# console.log h / w
+w = (x 2) - (x 1)
+h = (y 1) - (y 1.01)
+console.log h / w
 
 color = d3.scale.ordinal!
     ..domain [0, 10]
