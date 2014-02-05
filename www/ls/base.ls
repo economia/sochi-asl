@@ -132,6 +132,7 @@ crosshairLines.datum crosshaired.male
 tooltip = -> escape "<b>#{it.name}</b><br />#{it.sport.name}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
 
 draw-sport = (sport, originatingElement, originatingAthlete) ->
+    return if sport.highlight
     if originatingElement
         originatingDElement = d3.select originatingElement
             ..attr \fill (.fullColor)
@@ -151,6 +152,7 @@ draw-sport = (sport, originatingElement, originatingAthlete) ->
     sport.highlight = elements
 
 clear-sport = (sport, originatingElement) ->
+    return unless sport.highlight
     if originatingElement
         d3.select originatingElement
             ..attr \fill (.gsColor)
@@ -243,10 +245,14 @@ draw-selector = ->
                 draw-sport sport unless sport.isActive
             ..on \mouseout (sport) ->
                 clear-sport sport unless sport.isActive
+            ..on \mousedown -> d3.event.preventDefault!
             ..on \click (sport) ->
+                if sport.isActive
+                    clear-sport sport
+                else
+                    draw-sport sport
                 sport.isActive = !sport.isActive
                 d3.select @ .classed \active sport.isActive
-                clear-sport sport if not sport.isActive
 
     selector.selectAll \li
         ..each (d, i) ->
