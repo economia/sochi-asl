@@ -2,10 +2,11 @@
 @import prefixes
 @import extraIg
 @import Tooltip
-.ig
+
+#text .ig
     @import basics
 
-.ig
+#text .ig
     margin-top 20px
     svg
         overflow hidden
@@ -35,9 +36,6 @@
                 fill HNBlue
                 stroke-width 1px
 
-
-
-.ig
     HNDorange = desaturate(HNOrange, 87%)
     ul.selector
         position absolute
@@ -45,6 +43,7 @@
         left 68px
         height 0px // don't overlay the graph
         list-style-type none
+        list-style-image none
         padding 0px
         margin 0px
         li
@@ -164,6 +163,7 @@
         margin 0px 0px 18px 0px
         padding 0px
         list-style-type none
+        list-style-image none
         &:empty
             display none
         li
