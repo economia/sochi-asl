@@ -58,7 +58,7 @@ color = d3.scale.ordinal!
     ..range <[#e41a1c #377eb8 #4daf4a #984ea3 #ff7f00 #a65628 #f781bf]>
 gsColor = d3.scale.ordinal!
     ..domain [0, 10]
-    ..range <[#575757 #6F6F6F #868686 #6E6E6E #979797 #696969 #ABABAB]>
+    ..range <[#888 #999 #aaa #808080 #a0a0a0 #999]>
 sports_athletes = sports.map -> []
 for athlete in athletes
     athlete.x = x athlete.weight
