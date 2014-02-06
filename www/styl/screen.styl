@@ -152,7 +152,7 @@
                 margin 0px 0px 5px 0px
                 border-bottom 1px solid #444
                 float right
-        div
+        div.set
             float right
             clear both
             label
@@ -189,18 +189,41 @@
                     clear left
                     float right
                     width auto
-                    background lighten(HNOrange,82%)
                     font-weight bold
                     text-transform uppercase
                     padding 4px 7px
                     font-size 0.7em
-                    border-color lighten(HNDorange,45%)
-                    color darken(HNDorange, 30%)
-
+                    background lighten(HNDorange,85%)
+                    border-color lighten(HNDorange,53%)
 
             label
             input
                 margin-bottom 7px
+            div.submit
+                clear both
+                float right
+                position relative
+                a
+                    display none
+                    position absolute
+                    top 0px
+                    width 23px
+                    height 23px
+                    background transparent no-repeat 4px 4px
+                    opacity 0.8
+                    &:hover
+                        opacity 1
+                &.active a
+                    display block
+                a.fb
+                    left -36px
+                    background-image iurl("facebook.png")
+                a.tw
+                    left -60px
+                    background-image iurl("twitter.png")
+
+
+
     form ul,
     div.aux ul
         float left

@@ -96,6 +96,7 @@ inputs = container.append \form
         ..html "Zadejte svou výsku a&nbsp;váhu a&nbsp;porovnejte se s&nbsp;olympijskými sportovci"
     ..append \ul
     ..append \div
+        ..attr \class \set
         ..append \label
             ..attr \for \sochi-asl-height
             ..html "Výška"
@@ -110,9 +111,20 @@ inputs = container.append \form
             ..attr \id \sochi-asl-weight
             ..attr \type \number
             ..attr \value crosshaired.male.weight
-        ..append \input
-            ..attr \type \submit
-            ..attr \value "Porovnat"
+        ..append \div
+            ..attr \class \submit
+            ..append \input
+                ..attr \type \submit
+                ..attr \value "Porovnat"
+            ..append \a
+                ..attr \class \fb
+                ..attr \href "http://www.facebook.com/sharer/sharer.php?u=#{window.location.href}"
+                ..attr \target \_blank
+            ..append \a
+                ..attr \class \tw
+                ..attr \href "http://twitter.com/home?status=#{window.location.href}"
+                ..attr \target \_blank
+
     ..on \submit ->
         d3.event.preventDefault!
         weight = @querySelector \#sochi-asl-weight .value
@@ -437,6 +449,9 @@ set-crosshair = ({height, weight}:dimensions) ->
         ..selectAll \li .remove!
         ..selectAll \li .data sorted.slice 0, max .enter!append \li
             ..html -> "#{it.name} #{it.weight} kg, #{Math.round it.height * 100} cm, #{it.sport.name}, #{it.country}"
+    inputs.select \div.submit .classed \active yes
+    tweet = escape "Dle IHNED se mi postavou nejvic podoba #{sorted.0.name}. #{window.location.href}"
+    inputs.select \a.tw .attr \href "http://twitter.com/home?status=" + tweet
 
 sort-athletes = ({height, weight}) ->
     for athlete in athletes
