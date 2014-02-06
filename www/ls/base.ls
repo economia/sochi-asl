@@ -112,7 +112,7 @@ inputs = container.append \form
             ..attr \value crosshaired.male.weight
         ..append \input
             ..attr \type \submit
-            ..attr \value \OK
+            ..attr \value "Porovnat"
     ..on \submit ->
         d3.event.preventDefault!
         weight = @querySelector \#sochi-asl-weight .value

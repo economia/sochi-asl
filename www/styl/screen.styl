@@ -95,6 +95,43 @@
         top 250px
         li
             height 89px
+            &:first-child
+                border-color lighten(#377eb8, 70%)
+                background-color lighten(#377eb8, 95%)
+                span
+                    color darken(#377eb8, 70%)
+                canvas
+                    background lighten(#377eb8, 98%)
+                    border-bottom-color lighten(#377eb8, 50%)
+                &:hover
+                    background-color lighten(#377eb8, 89%)
+                    border-color lighten(#377eb8, 70%)
+                    box-shadow 0px 0px 3px lighten(#377eb8, 60%)
+            &.active:nth-child(1)
+                border-color lighten(#377eb8, 50%)
+                box-shadow 0px 0px 5px lighten(#377eb8, 60%)
+                background-color lighten(#377eb8, 85%)
+                canvas
+                    background lighten(#377eb8, 96%)
+            &:nth-child(2)
+                border-color lighten(#f781bf, 70%)
+                background-color lighten(#f781bf, 95%)
+                span
+                    color darken(#f781bf, 70%)
+                canvas
+                    background lighten(#f781bf, 98%)
+                    border-bottom-color lighten(#f781bf, 50%)
+                &:hover
+                    background-color lighten(#f781bf, 89%)
+                    border-color lighten(#f781bf, 70%)
+                    box-shadow 0px 0px 3px lighten(#f781bf, 60%)
+            &.active:nth-child(2)
+                box-shadow 0px 0px 5px lighten(#f781bf, 60%)
+                background-color lighten(#f781bf, 85%)
+                border-color lighten(#f781bf, 50%)
+                canvas
+                    background lighten(#f781bf, 96%)
+
     form
         &.off
             display none
@@ -107,6 +144,7 @@
             font-size 0.7em
             color #444
             text-align right
+            font-weight bold
             text-transform uppercase
             max-width 250px
             &.closest
@@ -151,8 +189,13 @@
                     clear left
                     float right
                     width auto
-                    background lighten(HNDorange,85%)
-                    border-color lighten(HNDorange,53%)
+                    background lighten(HNOrange,82%)
+                    font-weight bold
+                    text-transform uppercase
+                    padding 4px 7px
+                    font-size 0.7em
+                    border-color lighten(HNDorange,45%)
+                    color darken(HNDorange, 30%)
 
 
             label
