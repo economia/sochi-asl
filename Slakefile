@@ -82,8 +82,6 @@ download-external-data = (cb) ->
     console.log "Data combined"
     cb?!
 
-
-
 download-external-styles = (cb) ->
     console.log "Downloading styles..."
     require! request
@@ -174,8 +172,8 @@ gzip-file = (file, cb) ->
     input  = fs.createReadStream address
     output = fs.createWriteStream gzippedAddress
     input.pipe gzip .pipe output
-
     cb!
+
 refresh-manifest = (cb) ->
     (err, file) <~ fs.readFile "#__dirname/www/manifest.template.appcache"
     return if err
@@ -202,8 +200,10 @@ task \deploy ->
     <~ build-all-scripts
     <~ combine-scripts compression: yes
     <~ gzip-files!
+
 task \build-styles ->
     build-styles compression: no
+
 task \build-script ({currentfile}) ->
     file = relativizeFilename currentfile
     isServer = \src/ == file.substr 0, 4
