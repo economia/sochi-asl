@@ -78,11 +78,11 @@ for athlete in athletes
 
 crosshaired =
     male:
-        weight: 75
-        height: 1.68
+        weight: 84
+        height: 1.78
     female:
-        weight: 65
-        height: 1.57
+        weight: 69
+        height: 1.65
     user:
         weight: null
         height: null
