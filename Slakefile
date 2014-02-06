@@ -1,5 +1,6 @@
 require! fs
 require! iconv.Iconv
+require! async
 iconv = new Iconv \utf-8 \cp1250
 option 'testFile' 'File in (/lib or /test) to run test on' 'FILE'
 option 'currentfile' 'Latest file that triggered the save' 'FILE'
@@ -12,11 +13,14 @@ externalScripts =
 
 externalStyles = []
 
-preferScripts = <[ init.js ]>
+externalData =
+    athletes: "#__dirname/data/sportovci.json"
+
+preferScripts = <[ _loadData.js ../data.js init.js _loadExternal.js]>
 deferScripts = <[ base.js ]>
+develOnlyScripts = <[ _loadData.js _loadExternal.js]>
 gzippable = <[ ]>
 build-styles = (options = {}) ->
-    require! async
     (err, [external, local]) <~ async.parallel do
         *   (cb) -> fs.readFile "#__dirname/www/external.css", cb
             (cb) -> prepare-stylus \screen, options, cb
@@ -54,17 +58,35 @@ build-all-scripts = (cb) ->
 download-external-scripts = (cb) ->
     console.log "Dowloading scripts..."
     require! request
-    require! async
     (err, responses) <~ async.map externalScripts, request~get
     bodies = responses.map (.body)
     <~ fs.writeFile "#__dirname/www/external.js" bodies.join "\n;\n"
     console.log "Scripts loaded"
     cb?!
 
+download-external-data = (cb) ->
+    console.log "Combining data..."
+    files = for key, datafile of externalData => {key, datafile}
+    return cb! unless files.length
+    out = {}
+    (err) <~ async.each files, ({key, datafile}:file, cb) ->
+        (err, data) <~ fs.readFile datafile
+        return cb that if err
+        data .= toString!
+        data =
+            | \json is datafile.substr -4, 4 => JSON.parse data
+            | otherwise => JSON.stringify data
+        out[key] = data = data
+        cb!
+    <~ fs.writeFile "#__dirname/www/data.js", "window.ig.data = #{JSON.stringify out};"
+    console.log "Data combined"
+    cb?!
+
+
+
 download-external-styles = (cb) ->
-    console.log "Downloading styles"
+    console.log "Downloading styles..."
     require! request
-    require! async
     (err, responses) <~ async.map externalStyles, request~get
     contents = responses.map (.body)
     <~ fs.writeFile "#__dirname/www/external.css" contents.join "\n\n"
@@ -75,7 +97,10 @@ combine-scripts = (options = {}, cb) ->
     console.log "Combining scripts..."
     require! uglify: "uglify-js"
     (err, files) <~ fs.readdir "#__dirname/www/js"
-    files .= filter -> it isnt '_loadExternal.js' and it isnt 'script.js.map'
+    files .= filter -> it isnt 'script.js.map'
+    if options.compression
+        files .= filter -> it not in develOnlyScripts
+        files.push "../data.js"
     files .= sort (a, b) ->
         indexA = deferScripts.indexOf a
         indexB = deferScripts.indexOf b
@@ -93,7 +118,6 @@ combine-scripts = (options = {}, cb) ->
             ..mangle       = no
             ..outSourceMap = "../js/script.js.map"
             ..sourceRoot   = "../../"
-        files.unshift "./www/js/_loadExternal.js"
     result = uglify.minify files, minifyOptions
 
     {map, code} = result
@@ -139,7 +163,6 @@ relativizeFilename = (file) ->
     file .= substr 1
 
 gzip-files = (cb) ->
-    require! async
     (err) <~ async.map gzippable, gzip-file
     cb err
 
@@ -169,10 +192,12 @@ task \build ->
     combine-scripts compression: no
 
 task \deploy ->
-    <~ download-external-scripts!
-    # build-all-server-scripts!
-    # refresh-manifest!
-    <~ download-external-styles
+    <~ async.parallel do
+        *   download-external-scripts
+            download-external-data
+            download-external-styles
+            # build-all-server-scripts!
+            # refresh-manifest!
     build-styles compression: yes
     <~ build-all-scripts
     <~ combine-scripts compression: yes

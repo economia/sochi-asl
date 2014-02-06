@@ -8,8 +8,10 @@
 /www/screen.css
 /www/external.css
 /www/external.js
+/www/data.js
 /www/js/*
 !/www/js/_loadExternal.js
+!/www/js/_loadData.js
 !/www/js/echo.js
 /www/script.js
 /*.sublime-workspace

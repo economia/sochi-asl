@@ -1,4 +1,4 @@
-(err, {countries, sports, athletes}) <~ d3.pJson "/data/sportovci.json"
+{countries, sports, athletes} = ig.data.athletes
 sports .= map (name) -> {name, highlight: null, isActive: no}
 class Athlete
     (@id, @name, @weight, @height, @sportId, @countryId, @isMale, @age) ->
