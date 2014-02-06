@@ -426,9 +426,9 @@ set-crosshair = ({height, weight}:dimensions) ->
     inputs.select \p
         ..html "Vám nejbližší sportovci"
         ..attr \class \closest
-    inputs.select \ul .selectAll \li
-        .remove!
-        .data sorted.slice 0, 5 .enter!append \li
+    inputs.select \ul
+        ..selectAll \li .remove!
+        ..selectAll \li .data sorted.slice 0, 5 .enter!append \li
             ..html -> "#{it.name} #{it.weight} kg, #{Math.round it.height * 100} cm, #{it.sport.name}"
 
 sort-athletes = ({height, weight}) ->
