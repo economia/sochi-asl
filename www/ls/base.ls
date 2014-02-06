@@ -93,7 +93,7 @@ auxiliaryList = container.append \div
         ..attr \class \aux
 inputs = container.append \form
     ..append \p
-        ..html "Zadejte vaši výsku a&nbsp;váhu a&nbsp;porovnejte se s&nbsp;olympijskými sportovci"
+        ..html "Zadejte svou výsku a&nbsp;váhu a&nbsp;porovnejte se s&nbsp;olympijskými sportovci"
     ..append \ul
     ..append \div
         ..append \label
