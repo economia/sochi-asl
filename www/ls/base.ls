@@ -1,11 +1,12 @@
 (err, {countries, sports, athletes}) <~ d3.pJson "/data/sportovci.json"
 sports .= map (name) -> {name, highlight: null, isActive: no}
 class Athlete
-    (@id, @name, @weight, @height, @sportId, @isMale, @age) ->
+    (@id, @name, @weight, @height, @sportId, @countryId, @isMale, @age) ->
         @sport = sports[@sportId]
+        @country = countries[@countryId]
 
-athletes = for [name, sport_id, country, weight, height, isMale, age], index in athletes
-    new Athlete index, name, weight, height, sport_id, !!isMale, age
+athletes = for [name, sport_id, country_id, weight, height, isMale, age], index in athletes
+    new Athlete index, name, weight, height, sport_id, country_id,!!isMale, age
 
 heights = athletes.map (.height)
 weights = athletes.map (.weight)
@@ -208,7 +209,7 @@ draw = (filterFn, className, color, group) ->
             overlaps = it.overlaps && it.overlaps.length - 1
             if overlaps
                 out += "<i>a #{that} další#{if that > 4 then 'ch' else ''}</i><br />"
-            out += "#{it.sport.name}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
+            out += "#{it.sport.name}, #{it.country}<br />#{it.weight} kg, #{Math.round it.height * 100} cm, #{it.age} let"
             escape out
     setTimeout do
         ->
@@ -431,7 +432,7 @@ set-crosshair = ({height, weight}:dimensions) ->
     inputs.select \ul
         ..selectAll \li .remove!
         ..selectAll \li .data sorted.slice 0, max .enter!append \li
-            ..html -> "#{it.name} #{it.weight} kg, #{Math.round it.height * 100} cm, #{it.sport.name}"
+            ..html -> "#{it.name} #{it.weight} kg, #{Math.round it.height * 100} cm, #{it.sport.name}, #{it.country}"
 
 sort-athletes = ({height, weight}) ->
     for athlete in athletes
@@ -446,7 +447,7 @@ display-auxiliary = (athletes) ->
         ..append \h3 .html "Sportovci vážící #{weight} kg, #{Math.round height * 100} cm"
         ..append \ul .selectAll \li .data athletes
             ..enter!append \li
-                ..html -> "#{it.name}, #{it.sport.name}, #{it.age} let"
+                ..html -> "#{it.name}, #{it.sport.name}, #{it.age} let, #{it.country}"
 
 hide-auxiliary = -> auxiliaryList.selectAll \* .remove!
 draw-x-axis!
