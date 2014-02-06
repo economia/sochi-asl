@@ -18,14 +18,14 @@ limits =
         min: -2 + Math.min ...weights
         max: Math.max ...weights
 
-container = d3.select ig.containers['asl']
+container = d3.select ig.containers['base']
 margin =
     top: 110
     right: 5
     bottom: 18
     left: 48
-fullHeight = ig.containers['asl'].offsetHeight
-fullWidth = ig.containers['asl'].offsetWidth
+fullHeight = ig.containers['base'].offsetHeight
+fullWidth = ig.containers['base'].offsetWidth
 height = fullHeight - margin.bottom - margin.top
 width = fullWidth - margin.left - margin.right
 svg = container.append \svg
