@@ -423,12 +423,14 @@ set-crosshair = ({height, weight}:dimensions) ->
     crosshaired.user{weight, height} = {height, weight}
     draw-crosshair crosshaired.user
     sorted = sort-athletes {height, weight}
+    same = sorted.filter (.distance == 0)
+    max = Math.max 6, Math.min same.length
     inputs.select \p
         ..html "Vám nejbližší sportovci"
         ..attr \class \closest
     inputs.select \ul
         ..selectAll \li .remove!
-        ..selectAll \li .data sorted.slice 0, 5 .enter!append \li
+        ..selectAll \li .data sorted.slice 0, max .enter!append \li
             ..html -> "#{it.name} #{it.weight} kg, #{Math.round it.height * 100} cm, #{it.sport.name}"
 
 sort-athletes = ({height, weight}) ->
