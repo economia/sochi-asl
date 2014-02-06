@@ -15,16 +15,18 @@ externalStyles = []
 
 externalData =
     athletes: "#__dirname/data/sportovci.json"
+    style: "#__dirname/www/screen.css"
 
-preferScripts = <[ _loadData.js ../data.js init.js _loadExternal.js]>
+preferScripts = <[ postInit.js _loadData.js ../data.js init.js _loadExternal.js]>
 deferScripts = <[ base.js ]>
 develOnlyScripts = <[ _loadData.js _loadExternal.js]>
 gzippable = <[ ]>
-build-styles = (options = {}) ->
+build-styles = (options = {}, cb) ->
     (err, [external, local]) <~ async.parallel do
         *   (cb) -> fs.readFile "#__dirname/www/external.css", cb
             (cb) -> prepare-stylus \screen, options, cb
-    fs.writeFile "#__dirname/www/screen.css", external + "\n\n\n" + local
+    <~ fs.writeFile "#__dirname/www/screen.css", external + "\n\n\n" + local
+    cb?!
 
 prepare-stylus = (file, options, cb) ->
     console.log "Building Stylus"
@@ -202,7 +204,9 @@ task \deploy ->
     <~ gzip-files!
 
 task \build-styles ->
-    build-styles compression: no
+    t0 = Date.now!
+    <~ build-styles compression: no
+    <~ download-external-data!
 
 task \build-script ({currentfile}) ->
     file = relativizeFilename currentfile
