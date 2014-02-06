@@ -446,6 +446,7 @@ sort-athletes = ({height, weight}) ->
     athletes.sort (a, b) -> a.distance - b.distance
 
 display-auxiliary = (athletes) ->
+    inputs.classed \off on
     {weight, height} = athletes.0
     auxiliaryList
         ..append \h3 .html "Sportovci vážící #{weight} kg, #{Math.round height * 100} cm"
@@ -453,7 +454,9 @@ display-auxiliary = (athletes) ->
             ..enter!append \li
                 ..html -> "#{it.name}, #{it.sport.name}, #{it.age} let, #{it.country}"
 
-hide-auxiliary = -> auxiliaryList.selectAll \* .remove!
+hide-auxiliary = ->
+    inputs.classed \off off
+    auxiliaryList.selectAll \* .remove!
 draw-x-axis!
 draw-y-axis!
 redraw-all!
