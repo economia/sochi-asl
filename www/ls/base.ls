@@ -405,8 +405,8 @@ draw-crosshair = (target) ->
                 ..attr \y1 0
                 ..attr \y2 height
     tooltip =
-        | target is crosshaired.male => "Průměrný muž"
-        | target is crosshaired.female => "Průměrná žena"
+        | target is crosshaired.male => "Průměrný český muž"
+        | target is crosshaired.female => "Průměrná česká žena"
         | otherwise => "Vy!"
     crosshairCenterCircle
         ..attr \data-tooltip escape "<b>#tooltip</b><br />#{target.weight} kg, #{Math.round target.height * 100} cm"
