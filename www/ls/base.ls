@@ -278,7 +278,11 @@ draw-selector = ->
     selector.selectAll \li .data sports
         ..enter!append \li
             ..append \span
-                ..html -> if it.name == "Rychlobruslení" then "Rychlo bruslení" else it.name
+                ..html -> switch it.name
+                    | "Rychlobruslení" => "Rychlo bruslení"
+                    | "Běh na lyžích" => "Běh<br />na lyžích"
+                    | "Short Track" => "Short<br />Track"
+                    | otherwise => it.name
             ..on \mouseover (sport) ->
                 draw-sport sport unless sport.isActive
             ..on \mouseout (sport) ->
