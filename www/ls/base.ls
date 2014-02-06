@@ -39,12 +39,12 @@ crosshairLines = drawing.append \g
         ..attr \class \x
     ..append \line
         ..attr \class \y
+graph = drawing.append \g
+    ..attr \class \graph
 crosshairCenter = drawing.append \g
     ..attr \class \crosshair
 crosshairCenterCircle = crosshairCenter.append \circle
     ..attr \r 5
-graph = drawing.append \g
-    ..attr \class \graph
 highlightGraph = drawing.append \g
     ..attr \class \highlightGraph
 
